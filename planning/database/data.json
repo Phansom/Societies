@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Redwall",
+    "population": 550,
+    "growth": 40 ,
+    "wealth": 200,
+    "income": 20
+  },
+  {
+    "name": "Cornwall",
+    "population": 300,
+    "growth": 20,
+    "wealth": 90,
+    "income": -5
+  }
+]

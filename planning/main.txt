@@ -1,0 +1,42 @@
+from dataclasses import dataclass
+from datetime import *
+
+@dataclass
+class Main:
+    running: bool
+    now: datetime
+    dt: int
+    fps: int
+    interval_start: datetime
+    interval_duration: int
+    interval_end = datetime
+
+
+    @staticmethod
+    def main():
+        running=True
+        now = datetime.now()
+        interval_start = now
+        interval_duration = 2 # in seconds
+        interval_end = interval_start + timedelta(seconds = interval_duration)
+
+        last_dt = datetime.now()
+
+        while running:
+            fps += 1
+            dt = datetime.now() - last_dt
+
+
+
+
+            last_dt = dt
+            time_elapsed = datetime.now() - interval_start
+            if time_elapsed > interval_time:
+                update time
+
+
+
+
+
+if __name__ == "__main__":
+    Main.main()

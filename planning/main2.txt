@@ -1,0 +1,36 @@
+from datetime import datetime, timedelta
+from models.city import *
+
+
+interval_duration: int = 1
+
+
+def check_events():
+    r = random.randrange(2)
+    if r == 0:
+        c = City()
+        c.name = random_city()
+        print(f"{c.name} has been founded!"
+              f"All cities: {city_list}")
+
+
+def game_loop(interval_start):
+    running = True
+    interval_end = interval_start + timedelta(seconds = interval_duration)
+    fps = 0
+
+    while running:
+        now = datetime.now()
+        fps += 1
+        if now > interval_end:
+            check_events()
+            fps = 0
+            interval_start = interval_end
+            interval_end = interval_start + timedelta(seconds = interval_duration)
+
+def main():
+    game_loop(interval_start=datetime.now())
+
+
+if __name__ == "__main__":
+    main()
