@@ -12,7 +12,7 @@ class ResourceManager:
 
         # costs
         self.costs = {
-            "lumbermill": {"wood": 7, "stone": 3},
+            "household": {"wood": 7, "stone": 3},
             "stonemasonry": {"wood": 3, "stone": 5}
         }
 

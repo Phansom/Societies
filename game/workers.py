@@ -11,7 +11,7 @@ class Worker:
         self.world.entities.append(self)
         image = pg.image.load("assets/graphics/worker.png").convert_alpha()
         self.name = "worker"
-        self.image = pg.transform.scale(image, (image.get_width() * 2, image.get_height()*2))
+        self.image = pg.transform.scale(image, (image.get_width(), image.get_height()))
         self.tile = tile
 
         # pathfinding

@@ -2,7 +2,8 @@ import pygame as pg
 import random
 import noise
 from .settings import TILE_SIZE
-from .buildings import Lumbermill, Stonemasonry
+from .buildings import Household, Stonemasonry
+from .city import City
 
 
 class World:
@@ -23,8 +24,10 @@ class World:
         self.world = self.create_world()
         self.collision_matrix = self.create_collision_matrix()
 
+        self.cities = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.buildings = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.workers = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+
 
         self.temp_tile = None
         self.examine_tile = None
@@ -59,8 +62,8 @@ class World:
                 }
 
                 if mouse_action[0] and not collision:
-                    if self.hud.selected_tile["name"] == "lumbermill":
-                        ent = Lumbermill(render_pos, self.resource_manager)
+                    if self.hud.selected_tile["name"] == "household":
+                        ent = Household(render_pos, self.resource_manager)
                         self.entities.append(ent)
                         self.buildings[grid_pos[0]][grid_pos[1]] = ent
                     elif self.hud.selected_tile["name"] == "stonemasonry":
@@ -115,6 +118,14 @@ class World:
                     screen.blit(worker.image,
                                 (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                                  render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y))
+
+                # draw cities
+                city = self.cities[x][y]
+                if city is not None:
+                    screen.blit(city.image,
+                                (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                                 render_pos[1] - (city.image.get_height() - TILE_SIZE) + camera.scroll.y))
+
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
@@ -173,6 +184,8 @@ class World:
                 tile = "tree"
             elif r == 2:
                 tile = "rock"
+            elif r == 3:
+                tile = "household"
             else:
                 tile = ""
 
@@ -220,13 +233,15 @@ class World:
         building2 = pg.image.load("assets/graphics/building02.png").convert_alpha()
         tree = pg.image.load("assets/graphics/tree.png").convert_alpha()
         rock = pg.image.load("assets/graphics/rock.png").convert_alpha()
+        household = pg.image.load("assets/graphics/hut_X3.png").convert_alpha()
 
         images = {
             "building1": building1,
             "building2": building2,
             "tree": tree,
             "rock": rock,
-            "block": block
+            "block": block,
+            "household": household
         }
 
         return images
