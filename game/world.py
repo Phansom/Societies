@@ -77,8 +77,7 @@ class World:
         else:
 
             grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-
-            if self.can_place_tile(grid_pos):
+            if self.can_place_tile(grid_pos) and grid_pos in self.world:
                 building = self.buildings[grid_pos[0]][grid_pos[1]]
                 if mouse_action[0] and (building is not None):
                     self.examine_tile = grid_pos

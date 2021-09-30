@@ -4,16 +4,15 @@ import pygame as pg
 class ResourceManager:
 
     def __init__(self):
-        self.player_resources = {
-            "wood": 5,
-            "stone": 5,
-            "food": 5
+        self.resources = {
+            "wood": 10,
+            "stone": 10,
+            "food": 10
         }
 
-        self.resources = {
-            "wood": {"local": 10, "supply": 0, "demand": 0},
-            "stone": {"local": 10, "supply": 0, "demand": 0},
-            "food": {"local": 10, "supply": 0, "demand": 0}
+        self.resource_data = {
+            "production": 0,
+            "consumption": 0
         }
 
         # costs
@@ -24,18 +23,21 @@ class ResourceManager:
 
     def apply_cost_to_resource(self, building):
         for resource, cost in self.costs[building].items():
-            self.player_resources[resource] -= cost
+            self.resources[resource] -= cost
 
     def is_affordable(self, building):
         affordable = True
         for resource, cost in self.costs[building].items():
-            if cost > self.player_resources[resource]:
+            if cost > self.resources[resource]:
                 affordable = False
         return affordable
 
     def update_resource_data(self):
         for resource in self.resources:
-            pass
+            for _ in self.resource_data:
+                self.resources[resource] += (self.resource_data["production"] - self.resource_data["consumption"])
+
+
 
 
 
