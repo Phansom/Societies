@@ -184,8 +184,6 @@ class World:
                 tile = "tree"
             elif r == 2:
                 tile = "rock"
-            elif r == 3:
-                tile = "household"
             else:
                 tile = ""
 

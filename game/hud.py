@@ -95,7 +95,7 @@ class Hud:
             screen.blit(icon, tile["rect"].topleft)
 
         pos = self.width - 400
-        for resource, resource_value in self.resource_manager.resources.items():
+        for resource, resource_value in self.resource_manager.player_resources.items():
             txt = resource + ": " + str(resource_value)
             draw_text(screen, txt, 30, (255,255,255), (pos, 0))
             pos += 100

@@ -15,11 +15,9 @@ class Household:
         self.resource_manager.apply_cost_to_resource(self.name)
         self.resource_cooldown = pg.time.get_ticks()
 
+
     def update(self):
-        now = pg.time.get_ticks()
-        if now - self.resource_cooldown > 2000:
-            self.resource_manager.resources['wood'] += int(0.01*self.population)
-            self.resource_cooldown = now
+        pass
 
 
 class Stonemasonry:
@@ -36,5 +34,5 @@ class Stonemasonry:
     def update(self):
         now = pg.time.get_ticks()
         if now - self.resource_cooldown > 2000:
-            self.resource_manager.resources['stone'] += 1
+            self.resource_manager.player_resources['stone'] += 1
             self.resource_cooldown = now
