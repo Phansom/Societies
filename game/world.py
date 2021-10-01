@@ -2,7 +2,7 @@ import pygame as pg
 import random
 import noise
 from .settings import TILE_SIZE
-from .buildings import Household, Stonemasonry
+from .buildings import Building
 from .city import City
 
 
@@ -26,8 +26,6 @@ class World:
 
         self.cities = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
         self.buildings = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
-        self.workers = [[None for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
-
 
         self.temp_tile = None
         self.examine_tile = None
@@ -62,12 +60,8 @@ class World:
                 }
 
                 if mouse_action[0] and not collision:
-                    if self.hud.selected_tile["name"] == "household":
-                        ent = Household(render_pos, self.resource_manager)
-                        self.entities.append(ent)
-                        self.buildings[grid_pos[0]][grid_pos[1]] = ent
-                    elif self.hud.selected_tile["name"] == "stonemasonry":
-                        ent = Stonemasonry(render_pos, self.resource_manager)
+                    if self.hud.selected_tile["name"] == "city":
+                        ent = City(render_pos)
                         self.entities.append(ent)
                         self.buildings[grid_pos[0]][grid_pos[1]] = ent
                     self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
@@ -90,6 +84,7 @@ class World:
         for x in range(self.grid_length_x):
             for y in range(self.grid_length_y):
                 render_pos = self.world[x][y]["render_pos"]
+
                 # draw world tiles
                 tile = self.world[x][y]["tile"]
                 if tile != "":
@@ -100,23 +95,16 @@ class World:
                 # draw buildings
                 building = self.buildings[x][y]
                 if building is not None:
-                    screen.blit(building.image,
-                                (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                 render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y))
-                    if self.examine_tile is not None:
-                        if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
-                            mask = pg.mask.from_surface(building.image).outline()
-                            mask = [(x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                     y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y)
-                                    for x, y in mask]
-                            pg.draw.polygon(screen, (255, 255, 255), mask, 3)
-
-                # draw workers
-                worker = self.workers[x][y]
-                if worker is not None:
-                    screen.blit(worker.image,
-                                (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                 render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y))
+                   screen.blit(building.image,
+                               (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                                render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y))
+                   if self.examine_tile is not None:
+                       if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
+                           mask = pg.mask.from_surface(building.image).outline()
+                           mask = [(x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                                    y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y)
+                                   for x, y in mask]
+                           pg.draw.polygon(screen, (255, 255, 255), mask, 3)
 
                 # draw cities
                 city = self.cities[x][y]
@@ -124,7 +112,6 @@ class World:
                     screen.blit(city.image,
                                 (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                                  render_pos[1] - (city.image.get_height() - TILE_SIZE) + camera.scroll.y))
-
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
@@ -224,17 +211,12 @@ class World:
         return grid_x, grid_y
 
     def load_images(self):
-
         block = pg.image.load("assets/graphics/block.png").convert_alpha()
-        building1 = pg.image.load("assets/graphics/building01.png").convert_alpha()
-        building2 = pg.image.load("assets/graphics/building02.png").convert_alpha()
         tree = pg.image.load("assets/graphics/tree.png").convert_alpha()
         rock = pg.image.load("assets/graphics/rock.png").convert_alpha()
         household = pg.image.load("assets/graphics/hut_X3.png").convert_alpha()
 
         images = {
-            "building1": building1,
-            "building2": building2,
             "tree": tree,
             "rock": rock,
             "block": block,

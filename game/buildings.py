@@ -1,38 +1,31 @@
 import pygame as pg
-from .settings import D_POPULATION
+from .settings import D_POPULATION, ECONOMY_COOLDOWN
 
-class Household:
 
-    def __init__(self, pos, resource_manager):
-        image = pg.image.load("assets/graphics/hut_X3.png")
-        self.image = image
-        self.name = "household"
+# TODO: Might end up replacing this with the city.py code; unsure if will be using buildings in the future. Possibly
+# TODO: might use this as a constructable section (ie villages, cropland, rangeland, woodland).
+class Building:
+
+    def __init__(self, name, pos, city, img):
+        self.image = img
+        self.name = name
+        self.pos = pos
+        self.city = city
         self.rect = self.image.get_rect(topleft=pos)
+        self.update_cooldown = pg.time.get_ticks()
 
-        self.population = D_POPULATION
-
-        self.resource_manager = resource_manager
-        self.resource_manager.apply_cost_to_resource(self.name)
-        self.resource_cooldown = pg.time.get_ticks()
-
-
-    def update(self):
-        pass
-
-
-class Stonemasonry:
-
-    def __init__(self, pos, resource_manager):
-        image = pg.image.load("assets/graphics/building02.png")
-        self.image = image
-        self.name = "stonemasonry"
-        self.rect = self.image.get_rect(topleft=pos)
-        self.resource_manager = resource_manager
-        self.resource_manager.apply_cost_to_resource(self.name)
-        self.resource_cooldown = pg.time.get_ticks()
-
-    def update(self):
+    def update(self, update_method):
         now = pg.time.get_ticks()
-        if now - self.resource_cooldown > 2000:
-            self.resource_manager.player_resources['stone'] += 1
-            self.resource_cooldown = now
+        if now - self.update_cooldown > ECONOMY_COOLDOWN:
+            # TODO: update the building as needed here
+
+            self.update_cooldown = now
+
+
+building_list = {
+    "name": str,
+    "pos": (int,int)
+
+
+
+}

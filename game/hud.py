@@ -2,6 +2,7 @@ import pygame as pg
 from .utils import draw_text
 
 
+# TODO: Improve GUI, add in selection_data, add more panels and huds (ex popups).
 class Hud:
 
     def __init__(self, resource_manager, width, height):
@@ -10,10 +11,10 @@ class Hud:
         self.width = width
         self.height = height
 
-        self.hud_color = (198, 155, 93, 175)
+        self.hud_color = (198, 155, 100, 200)
 
         # resources hud
-        self.resources_surface = pg.Surface((width, height * 0.02), pg.SRCALPHA)
+        self.resources_surface = pg.Surface((width, height * 0.03), pg.SRCALPHA)
         self.resources_rect = self.resources_surface.get_rect(topleft=(0,0))
         self.resources_surface.fill(self.hud_color)
 
@@ -103,12 +104,10 @@ class Hud:
 
     def load_images(self):
         # read images
-        household = pg.image.load("assets/graphics/hut_X3.png")
-        stonemasonry = pg.image.load("assets/graphics/building02.png")
+        city = pg.image.load("assets/graphics/hut_X3.png")
 
         images = {
-            "household": household,
-            "stonemasonry": stonemasonry
+            "city": city
         }
 
         return images
