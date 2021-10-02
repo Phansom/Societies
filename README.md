@@ -8,7 +8,4 @@ society-building game
 
 This is primarily being used as a learning experience to continue learning how to use pygame as a framework for game creation.
 
-However, I do intend on turning it into an actual game. The focus will be based around the City object, with the main game loop being the player's interactions
-with the cities (politically or economically, which equate to number changes in the cities, which the player can exploit to gain more stuff).
-
-Advice, tips, pointers are appreciated. 
+Primary game loop is planned to be player -interaction-> cities -modifies-> player_resources -allows-> player -interaction->...
