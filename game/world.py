@@ -1,7 +1,7 @@
 import pygame as pg
 import random
 import noise
-from .settings import TILE_SIZE
+from .settings import TILE_SIZE, RED
 from .buildings import Building
 from .city import City
 
@@ -29,53 +29,24 @@ class World:
 
         self.temp_tile = None
         self.examine_tile = None
+        self.start_click_grid_pos = None
 
-    def update(self, camera):
 
-        mouse_pos = pg.mouse.get_pos()
-        mouse_action = pg.mouse.get_pressed()
+    def build(self, grid_pos):
+        if self.hud.selected_tile["name"] == "city":
+            ent = City(grid_pos)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
 
-        if mouse_action[2]:
-            self.examine_tile = None
-            self.hud.examined_tile = None
+        elif "name" in self.hud.selected_tile:
+            ent = Building(grid_pos)
+            self.entities.append(ent)
+            self.buildings[grid_pos[0]][grid_pos[1]] = ent
 
-        self.temp_tile = None
-        if self.hud.selected_tile is not None:
+        self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+        self.collision_matrix[grid_pos[1]][grid_pos[0]] = 0
+        self.hud.selected_tile = None
 
-            grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-
-            if self.can_place_tile(grid_pos):
-                img = self.hud.selected_tile["image"].copy()
-                img.set_alpha(100)
-
-                render_pos = self.world[grid_pos[0]][grid_pos[1]]["render_pos"]
-                iso_poly = self.world[grid_pos[0]][grid_pos[1]]["iso_poly"]
-                collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
-
-                self.temp_tile = {
-                    "image": img,
-                    "render_pos": render_pos,
-                    "iso_poly": iso_poly,
-                    "collision": collision
-                }
-
-                if mouse_action[0] and not collision:
-                    if self.hud.selected_tile["name"] == "city":
-                        ent = City(render_pos)
-                        self.entities.append(ent)
-                        self.buildings[grid_pos[0]][grid_pos[1]] = ent
-                    self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
-                    self.collision_matrix[grid_pos[1]][grid_pos[0]] = 0
-                    self.hud.selected_tile = None
-
-        else:
-
-            grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
-            if self.can_place_tile(grid_pos) and grid_pos in self.world:
-                building = self.buildings[grid_pos[0]][grid_pos[1]]
-                if mouse_action[0] and (building is not None):
-                    self.examine_tile = grid_pos
-                    self.hud.examined_tile = building
 
     def draw(self, screen, camera):
 
@@ -95,16 +66,9 @@ class World:
                 # draw buildings
                 building = self.buildings[x][y]
                 if building is not None:
-                   screen.blit(building.image,
-                               (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y))
-                   if self.examine_tile is not None:
-                       if (x == self.examine_tile[0]) and (y == self.examine_tile[1]):
-                           mask = pg.mask.from_surface(building.image).outline()
-                           mask = [(x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
-                                    y + render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y)
-                                   for x, y in mask]
-                           pg.draw.polygon(screen, (255, 255, 255), mask, 3)
+                    screen.blit(building.image,
+                                (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                                 render_pos[1] - (building.image.get_height() - TILE_SIZE) + camera.scroll.y))
 
                 # draw cities
                 city = self.cities[x][y]
@@ -113,12 +77,14 @@ class World:
                                 (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                                  render_pos[1] - (city.image.get_height() - TILE_SIZE) + camera.scroll.y))
 
+
+        # DRAW THE "GHOST" IMAGE IN WORLD (OF THE BUILD HUD)
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
             iso_poly = [(x + self.grass_tiles.get_width() / 2 + camera.scroll.x, y + camera.scroll.y) for x, y in
                         iso_poly]
             if self.temp_tile["collision"]:
-                pg.draw.polygon(screen, (255, 0, 0), iso_poly, 3)
+                pg.draw.polygon(screen, RED, iso_poly, 3)
             else:
                 pg.draw.polygon(screen, (255, 255, 255), iso_poly, 3)
             render_pos = self.temp_tile["render_pos"]
@@ -163,7 +129,7 @@ class World:
         r = random.randint(1, 100)
         perlin = 100 * noise.pnoise2(grid_x / self.perlin_scale, grid_y / self.perlin_scale)
 
-        if (perlin >= 15) or (perlin <= -35):
+        if (perlin >= 45) or (perlin <= -45):
             tile = "tree"
         else:
             if r == 1:
@@ -210,20 +176,22 @@ class World:
         grid_y = int(cart_y // TILE_SIZE)
         return grid_x, grid_y
 
+
     def load_images(self):
         block = pg.image.load("assets/graphics/block.png").convert_alpha()
         tree = pg.image.load("assets/graphics/tree.png").convert_alpha()
         rock = pg.image.load("assets/graphics/rock.png").convert_alpha()
-        household = pg.image.load("assets/graphics/hut_X3.png").convert_alpha()
+        city = pg.image.load("assets/graphics/hut_X3.png").convert_alpha()
 
         images = {
             "tree": tree,
             "rock": rock,
             "block": block,
-            "household": household
+            "city": city
         }
 
         return images
+
 
     def can_place_tile(self, grid_pos):
         mouse_on_panel = False
@@ -236,3 +204,28 @@ class World:
             return True
         else:
             return False
+
+
+    def mouse_click(self, mouse_pos, camera):
+        grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+        self.start_click_grid_pos = grid_pos
+
+
+    def mouse_up(self, mouse_pos, camera):
+        grid_pos = self.mouse_to_grid(mouse_pos[0], mouse_pos[1], camera.scroll)
+        print(f"{grid_pos} VS {self.start_click_grid_pos}")
+        if grid_pos == self.start_click_grid_pos:
+            collision = self.world[grid_pos[0]][grid_pos[1]]["collision"]
+            if self.hud.selected_tile is not None and not collision:
+                if self.can_place_tile(grid_pos):
+                    self.build(grid_pos)
+            else:
+                self.examine_grid_pos(grid_pos)
+
+
+    def examine_grid_pos(self, grid_pos):
+        building = self.buildings[grid_pos[0]][grid_pos[1]]
+        if building is not None:
+            self.examine_tile = grid_pos
+            self.hud.examined_tile = building
+            print(f"{building} has been examined.")

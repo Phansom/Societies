@@ -12,6 +12,7 @@ class Camera:
         self.mouse_pos = pg.mouse.get_pos()
         self.old_mouse_pos = pg.mouse.get_pos()
 
+
     def handle_mouse(self):
         mouse_pos = self.mouse_pos
 

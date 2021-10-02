@@ -7,12 +7,14 @@ from .resource_manager import ResourceManager
 class City:
 
     def __init__(self, pos):
+        self.image = pg.image.load("assets/graphics/hut_X3.png")
         self.name = generate_name()
+        self.rect = self.image.get_rect(topleft=pos)
         self.population = D_POPULATION
         self.businesses = None
         self.resource_manager = ResourceManager()
         self.pos = pos
-        self.image = pg.image.load("assets/graphics/hut_X3.png")
+
 
         self.consumption_rate = 0.01
         self.resource_cooldown = pg.time.get_ticks()
